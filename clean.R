@@ -14,8 +14,8 @@ acr <- read.csv("./data/Aged-Care-Homes-June-2018.csv")
 # aged care home
 ach <- read.csv("./data/HCP-June-2018.csv")
 
-dim(acr)
-dim(ach)
+#dim(acr)
+#dim(ach)
 
 # Removing unecessary variables -----------
 
@@ -28,6 +28,8 @@ ach$X.4 <- NULL
 # These aren't needed
 ach$MAX_EXIT_AMOUNT <- NULL
 
+# remove black obs and disclaimer row(s)
+ach <- ach[1:4618,]
 
 # Time -----------------
 # opening hours
@@ -51,7 +53,7 @@ ach$DESCRIPTION <- as.character(ach$DESCRIPTION) %>%
     tolower()
 
 # Weird column name(s)
-names(ach)[names(ach) == "Ã¯..OUTLET_NAME"] <- "OUTLET_NAME"
+names(ach)[names(ach) == "ï..OUTLET_NAME"] <- "OUTLET_NAME"
 
 # description cleaning
 ach$DESCRIPTION <- ach %>%
@@ -111,4 +113,3 @@ export_home <- function(){
 }
 
 export_home()
-
