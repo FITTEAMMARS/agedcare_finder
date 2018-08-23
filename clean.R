@@ -35,11 +35,11 @@ ach <- ach[1:4618,]
 # opening hours
 open_hours_std <- unlist(lapply(X = ach$HOURS_STANDARD, FUN = str_extract, pattern = ".+?(?=\\s-)"))
 open_hours_std <- gsub("\\.", ":", open_hours_std)
-open_hours_std <- format(strptime(open_hours_std, "%I:%M %p"), format="%H:%M:%S")
+open_hours_std <- format(strptime(open_hours_std, "%I:%M %p"), format="%H%M")
 # closing hours
 close_hours_std <- unlist(lapply(X = ach$HOURS_STANDARD, FUN = str_extract, pattern = "(?<=-\\s).*"))
 close_hours_std <- gsub("\\.", ":", close_hours_std)
-close_hours_std <- format(strptime(close_hours_std, "%I:%M %p"), format="%H:%M:%S")
+close_hours_std <- format(strptime(close_hours_std, "%I:%M %p"), format="%H%M")
 
 # Address ------------
 # consistent state abbv
