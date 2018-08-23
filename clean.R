@@ -109,7 +109,7 @@ export_home <- function(){
                                    "HOURS_OPEN",
                                    "HOURS_CLOSE",
                                    "STATE")
-    write.csv(x = clean_data_home, file = "./data/clean/clean_data_home.csv", na = "NaN", row.names = FALSE)
+    write.csv(x = clean_data_home, file = "./data/clean/clean_data_miltime.csv", na = "NaN", row.names = FALSE)
 }
 
 export_home()
