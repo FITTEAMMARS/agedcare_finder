@@ -1,6 +1,5 @@
 # Packages used ---------
 
-library(xlsx)
 library(tm)
 library(stringr)
 library(tidyverse)
@@ -28,7 +27,10 @@ ach$X.4 <- NULL
 # These aren't needed
 ach$MAX_EXIT_AMOUNT <- NULL
 
-# remove black obs and disclaimer row(s)
+# Weird column name(s)
+names(ach)[names(ach) == "Ã¯..OUTLET_NAME"] <- "OUTLET_NAME"
+
+# remove blank obs and disclaimer row(s)
 ach <- ach[1:4618,]
 
 # Time -----------------
@@ -52,8 +54,6 @@ ach$DESCRIPTION <- as.character(ach$DESCRIPTION) %>%
     removePunctuation() %>%
     tolower()
 
-# Weird column name(s)
-names(ach)[names(ach) == "ï..OUTLET_NAME"] <- "OUTLET_NAME"
 
 # description cleaning
 ach$DESCRIPTION <- ach %>%
@@ -65,6 +65,14 @@ ach$DESCRIPTION <- ach %>%
 # removing stop words
 dc <- ach %>%
     unnest_tokens(word, DESCRIPTION)
+
+# Culture & Language ----------------
+
+cult <- as.character(ach$CULTURE)
+cult <- strsplit(cult, ",")
+cult <- lapply(cult, unlist)
+
+lapply(cult, FUN = gsub, pattern = "^\\s|\\s$", replacement = "")
 
 # AUX Functions -----------
 # get lat/lng from string address 
