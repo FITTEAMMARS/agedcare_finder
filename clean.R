@@ -11,7 +11,7 @@ library(reshape2)
 # aged care residential
 acr <- read.csv("./data/Aged-Care-Homes-June-2018.csv")
 # aged care home
-ach <- read.csv("./data/HCP-June-2018.csv")
+ach <- read.csv("./data/HCP-June-2018.csv", fileEncoding="UTF-8-BOM")
 
 #dim(acr)
 #dim(ach)
@@ -27,11 +27,10 @@ ach$X.4 <- NULL
 # These aren't needed
 ach$MAX_EXIT_AMOUNT <- NULL
 
-# Weird column name(s)
-names(ach)[names(ach) == "ï..OUTLET_NAME"] <- "OUTLET_NAME"
-
 # remove blank obs and disclaimer row(s)
 ach <- ach[1:4618,]
+
+ach$id <- seq_len(nrow(ach))
 
 # Time -----------------
 # opening hours
@@ -68,11 +67,16 @@ dc <- ach %>%
 
 # Culture & Language ----------------
 
-cult <- as.character(ach$CULTURE)
-cult <- strsplit(cult, ",")
-cult <- lapply(cult, unlist)
+cult_df <- ach %>%
+  select(id, CULTURE)
+  
+cult_df$CULTURE <- as.character(cult_df$CULTURE) %>%
+  strsplit(",")
 
-lapply(cult, FUN = gsub, pattern = "^\\s|\\s$", replacement = "")
+cult_df$CULTURE <- lapply(X = cult_df$CULTURE, FUN = gsub, pattern = "^\\s|\\s$", replacement = "")
+
+
+
 
 # AUX Functions -----------
 # get lat/lng from string address 
