@@ -12,10 +12,6 @@ library(reshape2)
 acr <- read.csv("./data/Aged-Care-Homes-June-2018.csv")
 # aged care home
 ach <- read.csv("./data/HCP-June-2018.csv", fileEncoding="UTF-8-BOM")
-
-#dim(acr)
-#dim(ach)
-
 # Removing unecessary variables -----------
 
 # what do these X ones even do? probably just errors from xlsx -> csv
@@ -37,16 +33,37 @@ ach$id <- seq_len(nrow(ach))
 open_hours_std <- unlist(lapply(X = ach$HOURS_STANDARD, FUN = str_extract, pattern = ".+?(?=\\s-)"))
 open_hours_std <- gsub("\\.", ":", open_hours_std)
 open_hours_std <- format(strptime(open_hours_std, "%I:%M %p"), format="%H%M")
+ach$OPEN_HOUR <- open_hours_std
 # closing hours
 close_hours_std <- unlist(lapply(X = ach$HOURS_STANDARD, FUN = str_extract, pattern = "(?<=-\\s).*"))
 close_hours_std <- gsub("\\.", ":", close_hours_std)
 close_hours_std <- format(strptime(close_hours_std, "%I:%M %p"), format="%H%M")
+ach$CLOSE_HOUR <- close_hours_std
 
+ach$HOURS_STANDARD <- NULL
 # Address ------------
 # consistent state abbv
 ach[ach$STREET_STATE == "qld",]$STREET_STATE = "QLD"
 # re-factor
 ach$STREET_STATE = factor(ach$STREET_STATE)
+
+# Removing NaNs from WEEKEND/EVENINGS
+ach[ach$WEEKENDS == "",]$WEEKENDS = "Available"
+ach[ach$EVENINGS == "",]$EVENINGS = "Available"
+ach$WEEKENDS <- factor(ach$WEEKENDS)
+ach$EVENINGS <- factor(ach$EVENINGS)
+
+
+levels(ach$WEEKENDS) <- c(TRUE, FALSE)
+levels(ach$EVENINGS) <- c(TRUE, FALSE)
+
+attr <- ach[!duplicated(ach$OUTLET_NAME),] 
+attr$address <- paste(attr$STREET_ST_ADDRESS, attr$STREET_SUBURB, attr$STREET_PCODE, attr$STREET_STATE)
+attr <- attr %>%
+    select(id, OUTLET_NAME, address, STREET_STATE, STREET_PCODE, STREET_SUBURB, OPEN_HOUR, CLOSE_HOUR, WEEKENDS, EVENINGS) 
+
+write.csv(x = attr, file = "./data/clean/facility_basic.csv", na = "NaN", row.names = FALSE)
+
 
 # NLP ------------
 ach$DESCRIPTION <- as.character(ach$DESCRIPTION) %>%
@@ -74,8 +91,6 @@ cult_df$CULTURE <- as.character(cult_df$CULTURE) %>%
   strsplit(",")
 
 cult_df$CULTURE <- lapply(X = cult_df$CULTURE, FUN = gsub, pattern = "^\\s|\\s$", replacement = "")
-
-
 
 
 # AUX Functions -----------
