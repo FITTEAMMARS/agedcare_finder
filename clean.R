@@ -41,7 +41,7 @@ ach$OPEN_HOUR_M <- open_hours_miltime
 close_hours_std <- unlist(lapply(X = ach$HOURS_STANDARD, FUN = str_extract, pattern = "(?<=-\\s).*"))
 close_hours_std <- gsub("\\.", ":", close_hours_std)
 close_hours_miltime <- format(strptime(close_hours_std, "%I:%M %p"), format="%H%M")
-open_hours_std <- format(strptime(open_hours_std, "%I:%M"), format="%H:%M")
+close_hours_std <- format(strptime(close_hours_std, "%I:%M %p"), format="%H:%M")
 
 ach$CLOSE_HOUR <- close_hours_std
 ach$CLOSE_HOUR_M <- close_hours_miltime
