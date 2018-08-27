@@ -9,7 +9,7 @@ library(reshape2)
 
 #setwd("C:/Users/Nish/Documents/5120/agedcare_finder/data/")
 # aged care residential
-acr <- read.csv("./data/Aged-Care-Homes-June-2018.csv")
+#acr <- read.csv("./data/Aged-Care-Homes-June-2018.csv")
 # aged care home
 ach <- read.csv("./data/HCP-June-2018.csv", fileEncoding="UTF-8-BOM")
 # Removing unecessary variables -----------
@@ -32,13 +32,19 @@ ach$id <- seq_len(nrow(ach))
 # opening hours
 open_hours_std <- unlist(lapply(X = ach$HOURS_STANDARD, FUN = str_extract, pattern = ".+?(?=\\s-)"))
 open_hours_std <- gsub("\\.", ":", open_hours_std)
-open_hours_std <- format(strptime(open_hours_std, "%I:%M %p"), format="%H%M")
+open_hours_miltime <- format(strptime(open_hours_std, "%I:%M"), format="%H%M")
+open_hours_std <- format(strptime(open_hours_std, "%I:%M %p"), format="%H:%M")
+
 ach$OPEN_HOUR <- open_hours_std
+ach$OPEN_HOUR_M <- open_hours_miltime
 # closing hours
 close_hours_std <- unlist(lapply(X = ach$HOURS_STANDARD, FUN = str_extract, pattern = "(?<=-\\s).*"))
 close_hours_std <- gsub("\\.", ":", close_hours_std)
-close_hours_std <- format(strptime(close_hours_std, "%I:%M %p"), format="%H%M")
+close_hours_miltime <- format(strptime(close_hours_std, "%I:%M %p"), format="%H%M")
+open_hours_std <- format(strptime(open_hours_std, "%I:%M"), format="%H:%M")
+
 ach$CLOSE_HOUR <- close_hours_std
+ach$CLOSE_HOUR_M <- close_hours_miltime
 
 ach$HOURS_STANDARD <- NULL
 # Address ------------
@@ -53,7 +59,6 @@ ach[ach$EVENINGS == "",]$EVENINGS = "Available"
 ach$WEEKENDS <- factor(ach$WEEKENDS)
 ach$EVENINGS <- factor(ach$EVENINGS)
 
-
 levels(ach$WEEKENDS) <- c(TRUE, FALSE)
 levels(ach$EVENINGS) <- c(TRUE, FALSE)
 
@@ -62,10 +67,17 @@ attr$address <- paste(attr$STREET_ST_ADDRESS, attr$STREET_SUBURB, attr$STREET_PC
 attr <- attr %>%
     select(id, OUTLET_NAME, address, STREET_STATE, STREET_PCODE, STREET_SUBURB, OPEN_HOUR, CLOSE_HOUR, WEEKENDS, EVENINGS) 
 
+attr_m <- ach[!duplicated(ach$OUTLET_NAME),] 
+attr_m$address <- paste(attr$STREET_ST_ADDRESS, attr$STREET_SUBURB, attr$STREET_PCODE, attr$STREET_STATE)
+attr_m <- attr_m %>%
+  select(id, OUTLET_NAME, address, STREET_STATE, STREET_PCODE, STREET_SUBURB, OPEN_HOUR_M, CLOSE_HOUR_M, WEEKENDS, EVENINGS) 
+
 write.csv(x = attr, file = "./data/clean/facility_basic.csv", na = "NaN", row.names = FALSE)
+write.csv(x = attr_m, file = "./data/clean/facility_basic_miltime.csv", na = "NaN", row.names = FALSE)
 
 
-# NLP ------------
+
+  # NLP ------------
 ach$DESCRIPTION <- as.character(ach$DESCRIPTION) %>%
     removePunctuation() %>%
     tolower()
