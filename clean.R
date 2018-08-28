@@ -7,7 +7,6 @@ library(tidytext)
 library(reshape2)
 
 
-#setwd("C:/Users/Nish/Documents/5120/agedcare_finder/data/")
 # aged care residential
 #acr <- read.csv("./data/Aged-Care-Homes-June-2018.csv")
 # aged care home
@@ -17,15 +16,35 @@ ach <- read.csv("./data/HCP-June-2018.csv", fileEncoding="UTF-8-BOM")
 # what do these X ones even do? probably just errors from xlsx -> csv
 ach$X <- NULL
 ach$X.1 <- NULL
+ach$X.2 <- NULL
 ach$X.3 <- NULL
 ach$X.4 <- NULL
 
-# These aren't needed
+# These aren't needed for our analysis
 ach$MAX_EXIT_AMOUNT <- NULL
+ach$COMMGOVT_SUBSIDISED <- NULL
+ach$NOTICE_OF_NON_COMPLIANCE <- NULL
+ach$HOME_CARE_LEVEL1_PROVIDED <- NULL
+ach$HOME_CARE_LEVEL1_AVAILABILITY <- NULL
+ach$HOME_CARE_LEVEL2_PROVIDED <- NULL
+ach$HOME_CARE_LEVEL2_AVAILABILITY <- NULL
+ach$HOME_CARE_LEVEL3_AVAILABILITY <- NULL
+ach$HOME_CARE_LEVEL3_PROVIDED <- NULL
+ach$HOME_CARE_LEVEL4_PROVIDED <- NULL
+ach$HOME_CARE_LEVEL4_AVAILABILITY <- NULL
+ach$NOTICE_OF_SANCTION <- NULL
+ach$CASE_MANAGEMENT_PROVIDER <- NULL
+ach$CASE_MANAGEMENT_SELF <- NULL
+ach$AVE_24.7_SURCHARGE <- NULL
+ach$AVE_EVENING_SURCHARGE <- NULL
+ach$AVE_WEEKEND_SURCHARGE <- NULL
+ach$AVE_PUBLIC_HOLIDAY_SURCHARGE <- NULL
+ach$MAIN_FAX <- NULL
 
 # remove blank obs and disclaimer row(s)
 ach <- ach[1:4618,]
 
+# basic ID for each facility
 ach$id <- seq_len(nrow(ach))
 
 # Time -----------------
@@ -53,14 +72,18 @@ ach[ach$STREET_STATE == "qld",]$STREET_STATE = "QLD"
 # re-factor
 ach$STREET_STATE = factor(ach$STREET_STATE)
 
-# Removing NaNs from WEEKEND/EVENINGS
+# Removing NaNs from WEEKEND/EVENINGS/PUB_HOLIDAYS
 ach[ach$WEEKENDS == "",]$WEEKENDS = "Available"
 ach[ach$EVENINGS == "",]$EVENINGS = "Available"
+ach[ach$PUB_HOLIDAYS == "",]$PUB_HOLIDAYS = "Available"
+
 ach$WEEKENDS <- factor(ach$WEEKENDS)
 ach$EVENINGS <- factor(ach$EVENINGS)
+ach$PUB_HOLIDAYS <- factor(ach$PUB_HOLIDAYS)
 
 levels(ach$WEEKENDS) <- c(TRUE, FALSE)
 levels(ach$EVENINGS) <- c(TRUE, FALSE)
+levels(ach$PUB_HOLIDAYS) <- c(TRUE, FALSE)
 
 attr <- ach[!duplicated(ach$OUTLET_NAME),] 
 attr$address <- paste(attr$STREET_ST_ADDRESS, attr$STREET_SUBURB, attr$STREET_PCODE, attr$STREET_STATE)
@@ -75,24 +98,48 @@ attr_m <- attr_m %>%
 write.csv(x = attr, file = "./data/clean/facility_basic.csv", na = "NaN", row.names = FALSE)
 write.csv(x = attr_m, file = "./data/clean/facility_basic_miltime.csv", na = "NaN", row.names = FALSE)
 
+serv_c <- Corpus(VectorSource(as.character(ach$SPECIALISED_SERVICES)))
+serv_c <- tm_map(serv_c, removePunctuation)
+serv_c <- tm_map(serv_c, tolower)
+serv_c <- tm_map(serv_c, removeWords, stopwords("english"))
+serv_tdm <- TermDocumentMatrix(serv_c)
+top_serv <- rowSums(as.matrix(serv_tdm))
+sort(top_serv, decreasing = TRUE)
+
+# ng
+ng <- ach %>%
+    select(id, SPECIAL_NEEDS_GROUPS)
+
+ng <- tidy(ng)
+# Dementia
+dem <- logical(length = nrow(ach))
+reable <- logical(length = nrow(ach))
+respite <- logical(length = nrow(ach))
+terminal <- logical(length = nrow(ach))
+mental_h <- logical(length = nrow(ach))
+
+for (f in 1:length(ach$SPECIALISED_SERVICES)) {
+    serv <- ach$SPECIALISED_SERVICES[f]
+    if (grepl(x = serv, pattern = "Dementia")) {
+        dem[f] = TRUE
+    }
+    if (grepl(x = serv, pattern = "Reablement")){
+        reable[f] = TRUE
+    }
+    if (grepl(x = serv, pattern = "Respite")){
+        respite[f] = TRUE
+    }  
+    if (grepl(x = serv, pattern = "Terminal")){
+        terminal[f] = TRUE
+    }  
+    if (grepl(x = serv, pattern = "Mental")){
+        mental_h[f] = TRUE
+    }  
+}
 
 
-  # NLP ------------
-ach$DESCRIPTION <- as.character(ach$DESCRIPTION) %>%
-    removePunctuation() %>%
-    tolower()
 
 
-# description cleaning
-ach$DESCRIPTION <- ach %>%
-    unnest_tokens(word, DESCRIPTION) %>%
-    anti_join(stop_words, by = "word") %>%
-    nest(DESCRIPTION) %>%
-    mutate(text = map(ach, unlist),
-           text = map_chr(text, paste, collapse = " "))
-# removing stop words
-dc <- ach %>%
-    unnest_tokens(word, DESCRIPTION)
 
 # Culture & Language ----------------
 
@@ -139,16 +186,3 @@ to_24h <- function(time_string){
 
 # OUTPUT ------------
 
-export_home <- function(){
-    clean_data_home <- melt(data.frame(ach$OUTLET_NAME, 
-                                       open_hours_std, 
-                                       close_hours_std,
-                                       ach$STREET_STATE))
-    colnames(clean_data_home) <- c("OUTLET_NAME",
-                                   "HOURS_OPEN",
-                                   "HOURS_CLOSE",
-                                   "STATE")
-    write.csv(x = clean_data_home, file = "./data/clean/clean_data_miltime.csv", na = "NaN", row.names = FALSE)
-}
-
-export_home()
