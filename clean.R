@@ -85,18 +85,6 @@ levels(ach$WEEKENDS) <- c(TRUE, FALSE)
 levels(ach$EVENINGS) <- c(TRUE, FALSE)
 levels(ach$PUB_HOLIDAYS) <- c(TRUE, FALSE)
 
-attr <- ach[!duplicated(ach$OUTLET_NAME),] 
-attr$address <- paste(attr$STREET_ST_ADDRESS, attr$STREET_SUBURB, attr$STREET_PCODE, attr$STREET_STATE)
-attr <- attr %>%
-    select(id, OUTLET_NAME, address, STREET_STATE, STREET_PCODE, STREET_SUBURB, OPEN_HOUR, CLOSE_HOUR, WEEKENDS, EVENINGS) 
-
-attr_m <- ach[!duplicated(ach$OUTLET_NAME),] 
-attr_m$address <- paste(attr$STREET_ST_ADDRESS, attr$STREET_SUBURB, attr$STREET_PCODE, attr$STREET_STATE)
-attr_m <- attr_m %>%
-  select(id, OUTLET_NAME, address, STREET_STATE, STREET_PCODE, STREET_SUBURB, OPEN_HOUR_M, CLOSE_HOUR_M, WEEKENDS, EVENINGS) 
-
-write.csv(x = attr, file = "./data/clean/facility_basic.csv", na = "NaN", row.names = FALSE)
-write.csv(x = attr_m, file = "./data/clean/facility_basic_miltime.csv", na = "NaN", row.names = FALSE)
 
 serv_c <- Corpus(VectorSource(as.character(ach$SPECIALISED_SERVICES)))
 serv_c <- tm_map(serv_c, removePunctuation)
@@ -120,22 +108,42 @@ mental_h <- logical(length = nrow(ach))
 
 for (f in 1:length(ach$SPECIALISED_SERVICES)) {
     serv <- ach$SPECIALISED_SERVICES[f]
-    if (grepl(x = serv, pattern = "Dementia")) {
+    if (grepl(x = serv, pattern = "dementia", ignore.case = TRUE)) {
         dem[f] = TRUE
     }
-    if (grepl(x = serv, pattern = "Reablement")){
+    if (grepl(x = serv, pattern = "reablement", ignore.case = TRUE)){
         reable[f] = TRUE
     }
-    if (grepl(x = serv, pattern = "Respite")){
+    if (grepl(x = serv, pattern = "respite", ignore.case = TRUE)){
         respite[f] = TRUE
     }  
-    if (grepl(x = serv, pattern = "Terminal")){
+    if (grepl(x = serv, pattern = "terminal", ignore.case = TRUE)){
         terminal[f] = TRUE
     }  
-    if (grepl(x = serv, pattern = "Mental")){
+    if (grepl(x = serv, pattern = "mental", ignore.case = TRUE)){
         mental_h[f] = TRUE
     }  
 }
+ach$DEM <- dem
+ach$REABLE <- reable
+ach$RESPITE <- respite
+ach$TERMINAL <- terminal
+ach$MENTAL_H  <- mental_h
+
+attr <- ach[!duplicated(ach$OUTLET_NAME),] 
+attr$address <- paste(attr$STREET_ST_ADDRESS, attr$STREET_SUBURB, attr$STREET_PCODE, attr$STREET_STATE)
+attr <- attr %>%
+  select(id, OUTLET_NAME, address, STREET_STATE, STREET_PCODE,
+         STREET_SUBURB, OPEN_HOUR, CLOSE_HOUR, WEEKENDS, EVENINGS,
+         DEM, REABLE, RESPITE, TERMINAL, MENTAL_H) 
+
+attr_m <- ach[!duplicated(ach$OUTLET_NAME),] 
+attr_m$address <- paste(attr$STREET_ST_ADDRESS, attr$STREET_SUBURB, attr$STREET_PCODE, attr$STREET_STATE)
+attr_m <- attr_m %>%
+  select(id, OUTLET_NAME, address, STREET_STATE, STREET_PCODE, STREET_SUBURB, OPEN_HOUR_M, CLOSE_HOUR_M, WEEKENDS, EVENINGS) 
+
+write.csv(x = attr, file = "./data/clean/facility_basic.csv", na = "NaN", row.names = FALSE)
+write.csv(x = attr_m, file = "./data/clean/facility_basic_miltime.csv", na = "NaN", row.names = FALSE)
 
 
 
