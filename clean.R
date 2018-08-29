@@ -66,11 +66,14 @@ ach$CLOSE_HOUR <- close_hours_std
 ach$CLOSE_HOUR_M <- close_hours_miltime
 
 ach$HOURS_STANDARD <- NULL
+
 # Address ------------
 # consistent state abbv
 ach[ach$STREET_STATE == "qld",]$STREET_STATE = "QLD"
 # re-factor
-ach$STREET_STATE = factor(ach$STREET_STATE)
+ach$STREET_STATE <- factor(ach$STREET_STATE)
+# All suburbs as CAPS
+ach$STREET_SUBURB <- toupper(as.character(ach$STREET_SUBURB))
 
 # Removing NaNs from WEEKEND/EVENINGS/PUB_HOLIDAYS
 ach[ach$WEEKENDS == "",]$WEEKENDS = "Available"
@@ -94,12 +97,14 @@ serv_tdm <- TermDocumentMatrix(serv_c)
 top_serv <- rowSums(as.matrix(serv_tdm))
 sort(top_serv, decreasing = TRUE)
 
+
 # ng
 ng <- ach %>%
     select(id, SPECIAL_NEEDS_GROUPS)
 
 ng <- tidy(ng)
-# Dementia
+
+# Dementia and other specialised services
 dem <- logical(length = nrow(ach))
 reable <- logical(length = nrow(ach))
 respite <- logical(length = nrow(ach))
@@ -131,7 +136,7 @@ ach$TERMINAL <- terminal
 ach$MENTAL_H  <- mental_h
 
 attr <- ach[!duplicated(ach$OUTLET_NAME),] 
-attr$address <- paste(attr$STREET_ST_ADDRESS, attr$STREET_SUBURB, attr$STREET_PCODE, attr$STREET_STATE)
+attr$address <- paste(attr$STREET_ST_ADDRESS, attr$STREET_SUBURB, attr$STREET_PCODE, attr$STREET_STATE, sep = ", ")
 attr <- attr %>%
   select(id, OUTLET_NAME, address, STREET_STATE, STREET_PCODE,
          STREET_SUBURB, OPEN_HOUR, CLOSE_HOUR, WEEKENDS, EVENINGS,
@@ -142,7 +147,114 @@ attr_m$address <- paste(attr$STREET_ST_ADDRESS, attr$STREET_SUBURB, attr$STREET_
 attr_m <- attr_m %>%
   select(id, OUTLET_NAME, address, STREET_STATE, STREET_PCODE, STREET_SUBURB, OPEN_HOUR_M, CLOSE_HOUR_M, WEEKENDS, EVENINGS) 
 
+
+## OUTLET_NAME cleaning --------------
+
+# remove state strings from name
+remove_state_string <- function(state_string){
+    regex_s = paste("(?<=\\W|^)(?i)", state_string, "(?=\\W|$)", sep = "")
+    out_str_v <- unlist(
+        lapply(
+            X = attr$OUTLET_NAME,
+            FUN = gsub,
+            pattern = regex_s,
+            replacement = "",
+            ignore.case = TRUE,
+            perl = TRUE
+        )
+    )
+    return(out_str_v)
+}
+
+# Floor -> Level for consistency
+
+attr$address <- unlist(lapply(X = attr$address,
+                              FUN = gsub,
+                              pattern = "(?<=\\W)(?i)level\\W*(?=\\s\\W*)",
+                              replacement = "Floor",
+                              perl = TRUE))
+
+# "rd" with Road
+attr$address <- unlist(lapply(X = attr$address,
+                              FUN = gsub,
+                              pattern = "(?<=\\W)(?i)rd\\W*(?=\\s\\W*)",
+                              replacement = "Road",
+                              perl = TRUE))
+
+
+# "st" with Street
+attr$address <- unlist(lapply(X = attr$address,
+                              FUN = gsub,
+                              pattern = "(?<=\\W)(?i)st\\W*(?=\\s\\W*)",
+                              replacement = "Street",
+                              perl = TRUE))
+
+
+
+attr$OUTLET_NAME <- remove_state_string("vic")
+attr$OUTLET_NAME <- remove_state_string("nsw")
+attr$OUTLET_NAME <- remove_state_string("sa")
+attr$OUTLET_NAME <- remove_state_string("qld")
+attr$OUTLET_NAME <- remove_state_string("act")
+attr$OUTLET_NAME <- remove_state_string("tas")
+attr$OUTLET_NAME <- remove_state_string("nt")
+attr$OUTLET_NAME <- remove_state_string("wa")
+
+# remove phone numbers
+attr$OUTLET_NAME <- unlist(lapply(X = attr$OUTLET_NAME,
+                                  FUN = gsub,
+                                  pattern = "\\d+",
+                                  replacement = "",
+                                  perl = TRUE))
+
+
+# remove space followed by "-"
+attr$OUTLET_NAME <- unlist(lapply(X = attr$OUTLET_NAME,
+                                  FUN = gsub,
+                                  pattern = "^\\s*-\\W",
+                                  replacement = "",
+                                  perl = TRUE))
+
+
+
+# remove "-" followed by spaces
+attr$OUTLET_NAME <- unlist(lapply(X = attr$OUTLET_NAME,
+                                  FUN = gsub,
+                                  pattern = "\\W-\\s*$",
+                                  replacement = "",
+                                  perl = TRUE))
+
+
+# remove empty brackets
+attr$OUTLET_NAME <- unlist(lapply(X = attr$OUTLET_NAME,
+                                  FUN = gsub,
+                                  pattern = "\\(\\W*\\)",
+                                  replacement = "",
+                                  perl = TRUE))
+
+# level mention
+
+
+
+# starting spaces
+attr$OUTLET_NAME <- unlist(lapply(X = attr$OUTLET_NAME,
+                                  FUN = gsub,
+                                  pattern = "^\\s*",
+                                  replacement = "",
+                                  perl = TRUE))
+
+
+
+
+
+attr <- attr[!duplicated(attr$address),]
+
+# one offs
+ach[ach$id == 94,]$OUTLET_NAME = "365 Care"
+
+
 write.csv(x = attr, file = "./data/clean/facility_basic.csv", na = "NaN", row.names = FALSE)
+
 write.csv(x = attr_m, file = "./data/clean/facility_basic_miltime.csv", na = "NaN", row.names = FALSE)
 
 
