@@ -105,28 +105,28 @@ ng <- ach %>%
 ng <- tidy(ng)
 
 # Dementia and other specialised services
-dem <- logical(length = nrow(ach))
-reable <- logical(length = nrow(ach))
-respite <- logical(length = nrow(ach))
-terminal <- logical(length = nrow(ach))
-mental_h <- logical(length = nrow(ach))
+dem <- as.character(logical(length = nrow(ach)))
+reable <- as.character(logical(length = nrow(ach)))
+respite <- as.character(logical(length = nrow(ach)))
+terminal <- as.character(logical(length = nrow(ach)))
+mental_h <- as.character(logical(length = nrow(ach)))
 
 for (f in 1:length(ach$SPECIALISED_SERVICES)) {
     serv <- ach$SPECIALISED_SERVICES[f]
     if (grepl(x = serv, pattern = "dementia", ignore.case = TRUE)) {
-        dem[f] = TRUE
+        dem[f] = "dementia"
     }
     if (grepl(x = serv, pattern = "reablement", ignore.case = TRUE)){
-        reable[f] = TRUE
+        reable[f] = "reable"
     }
     if (grepl(x = serv, pattern = "respite", ignore.case = TRUE)){
-        respite[f] = TRUE
+        respite[f] = "respite"
     }  
     if (grepl(x = serv, pattern = "terminal", ignore.case = TRUE)){
-        terminal[f] = TRUE
+        terminal[f] = "terminal"
     }  
     if (grepl(x = serv, pattern = "mental", ignore.case = TRUE)){
-        mental_h[f] = TRUE
+        mental_h[f] = "mental_health"
     }  
 }
 ach$DEM <- dem
