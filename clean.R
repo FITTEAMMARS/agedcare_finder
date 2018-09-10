@@ -247,6 +247,10 @@ attr <- attr[!duplicated(attr$address),]
 # one offs
 ach[ach$id == 94,]$OUTLET_NAME = "365 Care"
 
+## Remove punctuation from outlet name 
+
+attr$OUTLET_NAME <- removePunctuation(attr$OUTLET_NAME)
+
 
 write.csv(x = attr, file = "./data/clean/facility_basic.csv", na = "NaN", row.names = FALSE)
 
