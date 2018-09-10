@@ -129,23 +129,18 @@ for (f in 1:length(ach$SPECIALISED_SERVICES)) {
         mental_h[f] = "mental_health"
     }  
 }
-ach$DEM <- dem
-ach$REABLE <- reable
-ach$RESPITE <- respite
-ach$TERMINAL <- terminal
-ach$MENTAL_H  <- mental_h
+ach$dementia <- dem
+ach$reable <- reable
+ach$respite <- respite
+ach$terminal <- terminal
+ach$mental_health  <- mental_h
 
 attr <- ach[!duplicated(ach$OUTLET_NAME),] 
 attr$address <- paste(attr$STREET_ST_ADDRESS, attr$STREET_SUBURB, attr$STREET_PCODE, attr$STREET_STATE, sep = ", ")
 attr <- attr %>%
   select(id, OUTLET_NAME, address, STREET_STATE, STREET_PCODE,
          STREET_SUBURB, OPEN_HOUR, CLOSE_HOUR, WEEKENDS, EVENINGS,
-         DEM, REABLE, RESPITE, TERMINAL, MENTAL_H) 
-
-attr_m <- ach[!duplicated(ach$OUTLET_NAME),] 
-attr_m$address <- paste(attr$STREET_ST_ADDRESS, attr$STREET_SUBURB, attr$STREET_PCODE, attr$STREET_STATE)
-attr_m <- attr_m %>%
-  select(id, OUTLET_NAME, address, STREET_STATE, STREET_PCODE, STREET_SUBURB, OPEN_HOUR_M, CLOSE_HOUR_M, WEEKENDS, EVENINGS) 
+         dementia, reable, respite, terminal, mental_health) 
 
 
 ## OUTLET_NAME cleaning --------------
@@ -254,8 +249,6 @@ ach[ach$id == 94,]$OUTLET_NAME = "365 Care"
 
 
 write.csv(x = attr, file = "./data/clean/facility_basic.csv", na = "NaN", row.names = FALSE)
-
-write.csv(x = attr_m, file = "./data/clean/facility_basic_miltime.csv", na = "NaN", row.names = FALSE)
 
 
 
