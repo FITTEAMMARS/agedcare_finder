@@ -185,7 +185,6 @@ attr$address <- unlist(lapply(X = attr$address,
                               perl = TRUE))
 
 
-
 attr$OUTLET_NAME <- remove_state_string("vic")
 attr$OUTLET_NAME <- remove_state_string("nsw")
 attr$OUTLET_NAME <- remove_state_string("sa")
@@ -250,6 +249,25 @@ ach[ach$id == 94,]$OUTLET_NAME = "365 Care"
 ## Remove punctuation from outlet name 
 
 attr$OUTLET_NAME <- removePunctuation(attr$OUTLET_NAME)
+
+# remove other special char
+attr$OUTLET_NAME <- unlist(lapply(X = attr$OUTLET_NAME,
+                                  FUN = gsub,
+                                  pattern = "(?=\\W)(?=\\S)\\W",
+                                  replacement = " ",
+                                  perl = TRUE))
+
+
+
+
+# remove doulbe spaces
+attr$OUTLET_NAME <- unlist(lapply(X = attr$OUTLET_NAME,
+                                  FUN = gsub,
+                                  pattern = "\\s\\s+",
+                                  replacement = " ",
+                                  perl = TRUE))
+
+
 
 
 write.csv(x = attr, file = "./data/clean/facility_basic.csv", na = "NaN", row.names = FALSE)

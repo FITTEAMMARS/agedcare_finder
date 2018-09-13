@@ -46,5 +46,28 @@ bar_h <- highchart() %>%
     hc_add_theme(hc_theme_538())
 bar_h
 
+state <- c("NSW", "VIC", "QLD", "SA", "WA", "TAS", "NT", "ACT")
+aged_avg <- c(26.4,
+              25.1,
+              20.3,
+              12.1,
+              10.8,
+              3.5,
+              0.8,
+              1.8)
+state_avg <- c(31.6,
+             26.2,
+             19.7,
+             6.7,
+             10.8,
+             2.0,
+             1.1,
+             1.8)
+state_data <- data.frame(state, aged_avg, state_avg)
 
-htmlwidgets::createWidget("bar_test", x = bar_h, width = "100%", height = "100%")
+
+
+write.csv(x = tdata, file = "./data/outlook.csv", row.names = FALSE)
+write.csv(x = state_data, file = "./data/state_employment.csv", row.names = FALSE)
+
+#htmlwidgets::createWidget("bar_test", x = bar_h, width = "100%", height = "100%")
