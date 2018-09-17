@@ -421,7 +421,7 @@
                     "turboThreshold": 0,
                     "_colorIndex": 2
                 }],
-                "colors": ["#ff8f00", "#512da8", "#ccff90", "#f7a35c", "#8085e9", "#f15c80", "#e4d354", "#2b908f", "#f45b5b", "#91e8e1"],
+                "colors": ["#A6E1FA", "#1DD3B0", "#DDAE7E", "#f7a35c", "#8085e9", "#f15c80", "#e4d354", "#2b908f", "#f45b5b", "#91e8e1"],
                 "legend": {
                     "enabled": true
                 },
@@ -724,7 +724,7 @@
                         "text": "Employment Percentage"
                     }
                 }],
-                "colors": ["#ff8f00", "#212121", "#90ed7d", "#f7a35c", "#8085e9", "#f15c80", "#e4d354", "#2b908f", "#f45b5b", "#91e8e1"],
+                "colors": ["#A6E1FA", "#1DD3B0", "#90ed7d", "#f7a35c", "#8085e9", "#f15c80", "#e4d354", "#2b908f", "#f45b5b", "#91e8e1"],
                 "legend": {
                     "enabled": true
                 },
@@ -866,7 +866,7 @@
                     "_colorIndex": 0,
                     "_symbolIndex": 0
                 }],
-                "colors": ["#ec407a", "#434348", "#90ed7d", "#f7a35c", "#8085e9", "#f15c80", "#e4d354", "#2b908f", "#f45b5b", "#91e8e1"],
+                "colors": ["#A6E1FA", "#434348", "#90ed7d", "#f7a35c", "#8085e9", "#f15c80", "#e4d354", "#2b908f", "#f45b5b", "#91e8e1"],
                 "legend": {
                     "enabled": false
                 },
