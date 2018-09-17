@@ -37,6 +37,11 @@ workers <- c(82500,
 
 tdata <- data.frame(year, workers)
 
+tfit <- lm(workers ~ year, data = tdata)
+new_val <- data.frame(year=c(2018,2019,2020,2021))
+predict(tfit, new_val)
+
+
 bar_h <- highchart() %>%
     hc_chart(type = "column") %>%
     hc_title(text = "Aged and Disabled Care Employment Outlook") %>%
