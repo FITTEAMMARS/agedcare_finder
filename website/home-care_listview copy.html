@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta content='text/html; charset=utf-8' http-equiv='Content-Type'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+
+    <title>Home-care facility finder</title>
+
+    <meta name='description' content=''>
+    <meta name='viewport' content='width=1280'>
+
+
+    <meta name="application-name" content="PCPartPicker" />
+    <meta name="msapplication-TileColor" content="#FFFFFF" />
+    <meta name="msapplication-TileImage" content="/mstile-144x144.png" />
+    <!-- TradeDoubler site verification 3034188 -->
+    <!--
+    <?php
+    $test = "helloworld";
+echo "<script> var test= \"$test\";</script>";
+?>
+-->
+    <!--    <link rel="stylesheet" type="text/css" href="//cdn.pcpartpicker.com/static/forever/hash/site-c5f755161d873cdd9125c425cfcd4146.css" />-->
+    <link rel="stylesheet" type="text/css" href="homecarestyle.css" />
+    <!--<script type="text/javascript" src="//cdn.pcpartpicker.com/static/forever/hash/site-4611112efbc6ed9ad1c10993c862cea2.js"></script>-->
+    <script src="jquery.min.js"></script>
+    <link rel="stylesheet" href="jquery.range.css">
+    <link rel="stylesheet" data-automation="cssMain" type="text/css" href="testlist.css">
+    <script src="jquery.range.js"></script>
+
+    <!--
+    <script>
+        
+        
+        
+    jQuery.ajax({
+            url: "http://localhost/local/category/800/900read.php",
+            type: "GET",
+
+            contentType: 'application/json; charset=utf-8',
+            success: function(resultData) {
+                //here is your json.
+                  // process it
+
+            },
+            error : function(jqXHR, textStatus, errorThrown) {
+            },
+
+            timeout: 120000,
+        });
+    </script>
+-->
+    <script>
+        var selectedFacility = [];
+        document.cookie = "facilityOne";
+        selectedFacility = document.cookie; 
+        alert(selectedFacility);
+        $(function() {
+    if (data.length == 0){
+         $('.listview').append("No result founded.");
+    }
+
+else{
+            for (var i = 0; i < data.length; i++) {
+                //                        $('.test').append("<a onclick='javascript:details(\"" + data[i].name + "\")'>" + data[i].name + "</a></br>");
+                $('.listview').append("<div class = \"wholeFacility\"><div class = \"facility\" id = facility" + data[i].id + "\" saved = \"false\"> <label class = \"fpname\" > <h3>" + data[i].name + "</h3></label>" +
+                    "<span class=\"start3F start3F starte6\">" +
+                    "<h5 class=\"type\">" + data[i].Type + "</h5>" + "</span>" +
+                    "<div class = \"start1m\">" +
+                    "<span class = \"start3F _3PZrylH starte6\">" + "<strong class =\"startlw\"><span>" + data[i].State + " > " + "</span></strong >" +
+                    "<span>" + data[i].Suburb + "</span></span></div>" +
+                    "<span data-automation=\"jobShortDescription\" class=\"_3FrNV7v _1mzsMx5 _3XMSdz4 _3PZrylH starte6\"><span class=\"startbl\">" + "Operation hour:" + "</span><span id=\"openhour\">" + data[i].openHour + "-" +
+                    "</span><span id=\"openhour\">" + data[i].closeHour + "</span></span></div><div class = \"detailFacility\" id = " + data[i].id + " > I'm the hidden part </div></div><hr> "
+                );
+            }
+}
+
+
+
+
+
+
+        });
+        
+        $(document).ready(function(){
+            $(".detailFacility").hide();
+    $(".facility").click(function(){
+        $(this).next().toggle(1000);
+    });
+});
+
+        var data = [{
+                id:"1",
+                name: "First facility",
+                openHour: "08:00",
+                closeHour: "22:00",
+                Type: "Dementia, Reablement, Respite, Terminal, Mental Health",
+                State: "Victoria",
+                Suburb: "Caulfield",
+                Language: "English",
+                Address: "17 TAVERNER Street",
+                tel:"610354777100",
+                email:"birchip.admin@ewhs.org.au",
+                website:"http://ewhs.org.au/aged-care/",
+                PARTICULAR_NEED_SERVICES:"Focus on socially and financially disadvantaged people, Specific services for LGBTI people, Specific services for people with dementia"
+
+            },
+            {
+                id:"2",
+                name: "Second facility",
+                openHour: "08:00",
+                closeHour: "22:00",
+                Type: "Dementia, Reablement, Respite, Terminal, Mental Health",
+                State: "Victoria",
+                Suburb: "Caulfield"
+
+            },
+            {
+                id:"3",
+                name: "Third facility",
+                openHour: "08:00",
+                closeHour: "22:00",
+                Type: "Dementia, Reablement, Respite, Terminal, Mental Health",
+                State: "Victoria",
+                Suburb: "Caulfield"
+
+            }
+        ];
+        
+        function showDetail(dataId) {
+    document.getElementById(dataId).toggle(1000);
+}
+
+        function findName(personName) {
+            return $.grep(data, function(item) {
+                return item.name == personName;
+            });
+        }
+
+        function details(personName) {
+            var person = findName(personName.toString())[0];
+            $('#description').html(person.desc);
+        }
+    </script>
+
+    <script>
+
+
+        var evening = "dontcare";
+        var weekend = "dontcare";
+        var openHour;
+        var closeHour;
+        var jsonData;
+        
+        $(function(){
+        $.getJSON('http://localhost:8888/local/category/read.php', function(data) {
+
+            jsonData = data;
+            console.log(data.records[0]);
+            
+        });
+        });
+        
+        
+        const ProductFilters = {
+            rangesFilter: function(products, ranges) {
+                if (ranges.length === 0) {
+                    return products;
+                } else {
+                    for (let range of ranges) {
+                        if (range.low && range.high) {
+                            products = products.filter(function(item) {
+                                return parseInt(item[range.type]) >= parseInt(range.low) && parseInt(item[range.type]) <= parseInt(range.high);
+                            });
+                        }
+                    }
+                    return products;
+                }
+            },
+            choosesFilter: function(products, chooses) {
+                let tmpProducts = [];
+                if (chooses.length === 0) {
+                    tmpProducts = products;
+                } else {
+                    /**
+                     * 选择类型条件是或逻辑，使用数组连接concat
+                     */
+                    for (let choice of chooses) {
+                        tmpProducts = tmpProducts.concat(products.filter(function(item) {
+                            return item[choice.type].indexOf(choice.value) !== -1;
+                        }));
+                    }
+                }
+                return tmpProducts;
+            }
+        }
+        const products = [{
+                ID: 1,
+                name: 'Bupa Cau',
+                openHour: 800,
+                closeHour: 2200,
+                State: 'VIC',
+                Suburb: 'Caulfield',
+                Evening: 'Yes',
+                Weekend: 'Yes',
+                Description: 'Good'
+            },
+            {
+                ID: 2,
+                name: 'Bupa Hug',
+                openHour: 900,
+                closeHour: 1800,
+                State: 'VIC',
+                Suburb: 'Hughesdale',
+                Evening: 'No',
+                Weekend: 'No',
+                Description: 'OK'
+            },
+            {
+                ID: 3,
+                name: 'Bupa Oak',
+                openHour: 900,
+                closeHour: 2400,
+                State: 'VIC',
+                Suburb: 'Oakleigh',
+                Evening: 'Yes',
+                Weekend: 'No',
+                Description: 'Bad'
+            }
+        ];
+
+        var Conditions = {
+            ranges: [{
+                    type: 'openHour',
+                    low: 0,
+                },
+                {
+                    type: 'closeHour',
+                    high: 2400
+                }
+            ],
+            chooses: [{
+                    type: 'Evening',
+                    value: ''
+                },
+                {
+                    type: 'Weekend',
+                    value: ''
+                }
+            ]
+        };
+
+
+        function doFilter(products, conditions) {
+            // 根据条件循环调用筛选器里的方法
+            for (key in conditions) {
+                // 判断是否有需要的过滤方法
+                if (ProductFilters.hasOwnProperty(key + 'Filter') && typeof ProductFilters[key + 'Filter'] === 'function') {
+                    products = ProductFilters[key + 'Filter'](products, Conditions[key]);
+                }
+            }
+            return products;
+        }
+
+
+
+
+        function eveningChoice() {
+            if (document.getElementById("eveningChoice1").checked) {
+                evening = document.getElementById("eveningChoice1").value;
+            } else if (document.getElementById("eveningChoice2").checked) {
+                evening = document.getElementById("eveningChoice2").value;
+            } else if (document.getElementById("eveningChoice3").checked) {
+                evening = document.getElementById("eveningChoice3").value;
+            }
+        }
+
+        function weekendChoice() {
+            if (document.getElementById("weekendChoice1").checked) {
+                weekend = document.getElementById("weekendChoice1").value;
+            } else if (document.getElementById("weekendChoice2").checked) {
+                weekend = document.getElementById("weekendChoice2").value;
+            } else if (document.getElementById("weekendChoice3").checked) {
+                weekend = document.getElementById("weekendChoice3").value;
+            }
+        }
+        
+        
+
+
+
+        $(function() {
+            $('.range-slider').jRange({
+                from: 0,
+                to: 2400,
+                step: 30,
+                scale: ['00:00', '03:00', '06:00', '09:00', '12:00', '15:00', '18:00', '21:00', '24:00'],
+                format: '%s',
+                width: 300,
+                showLabels: false,
+                isRange: true
+            });
+
+            $("#apply-button").click(function() {
+                var aa = $(".range-slider").val();
+                var splitTime = aa.split(",");
+                openHour = splitTime[0];
+                closeHour = splitTime[1];
+                Conditions.ranges[0].low = parseInt(openHour);
+                Conditions.ranges[1].high = parseInt(closeHour);
+                Conditions.chooses[0].value = evening;
+                Conditions.chooses[1].value = weekend;
+                let result = jsonData;
+                console.log(result);
+
+//               $("#list_table").find("tr:not(:first)").remove();
+// tableFunction(result);
+                alert("No result founded.");
+
+            });
+        });
+        
+        function notFound(){
+            alert("No result founded.");
+        }
+
+        function tableFunction(result) {
+
+
+            var tableList = document.getElementById("list_table");
+            var jsonClean = result.records;
+            console.log(jsonClean);
+            for (i = 0; i < jsonClean.length; i++) {
+                var row = tableList.insertRow();
+                var name = row.insertCell(0);
+                var workinghour = row.insertCell(1);
+                var location = row.insertCell(2);
+                var description = row.insertCell(3);
+                name.innerHTML = jsonClean[i].OUTLET_NAME;
+                workinghour.innerHTML = jsonClean[i].OUTLET_NAME;
+                location.innerHTML = jsonClean[i].address;
+                description.innerHTML = jsonClean[i].OUTLET_NAME;
+            }
+        }
+
+        function selectState() {
+            document.getElementById("myDropdown").classList.toggle("show");
+        }
+
+        // Close the dropdown if the user clicks outside of it
+        window.onclick = function(event) {
+            if (!event.target.matches('.dropbtn')) {
+
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                var i;
+                for (i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+    </script>
+
+
+</head>
+
+
+<div>
+    <!--Title    -->
+    <div class="part-index">
+        <div class="hero tabnav-hero">
+            <div class="page-container">
+                <div class="title">
+                    <h1>Results</h1>
+
+                </div>
+            </div>
+        </div>
+        <div class="details">
+            <div class="part-index-body">
+                <div class="page-container">
+                    <div class="column-wrapper">
+                        <div class="left-column">
+                            <!--            left page filter-->
+                            <h2>Filters</h2>
+
+                            <div class="obj-filters">
+
+
+
+
+                                <div class="obj-filter " id="filterdiv_R">
+                                    <div class="title">Postcode</div>
+                                    <input type="text" name="postcode" value="1000"><br>
+                                </div>
+
+                                <div class="block">
+                                    <div class="obj-filters">
+                                        <!--html jrange-->
+                                        <div class="obj-filter " id="filterdiv_X">
+                                            <div class="title">Working Time</div>
+                                            <div class="demo">
+                                                <input class="range-slider" type="hidden" value="0,2400" />
+                                                <br>
+                                            </div>
+
+                                            <div id="filter_slide_X" class="obj-filter-dualslide"></div>
+
+                                        </div>
+
+                                        <div class="obj-filter " id="filterdiv_R">
+                                            <div class="title">Type of care</div>
+                                            <ul id="R_set" class="filter-list">
+                                                <li class="filter-row-all"><input type="checkbox" id="R_all" /><label for="R_all">All</label></li>
+                                                <li id="li_m6"><input type="checkbox" id="culture1" class="filteritem" /><label for="m6">Dementia</label></li>
+                                                <li id="li_m6"><input type="checkbox" id="culture1" class="filteritem" /><label for="m6">Reablement</label></li>
+                                                <li id="li_m6"><input type="checkbox" id="culture1" class="filteritem" /><label for="m6">Respite</label></li>
+                                                <li id="li_m6"><input type="checkbox" id="culture1" class="filteritem" /><label for="m6">Terminal</label></li>
+                                                <li id="li_m6"><input type="checkbox" id="culture1" class="filteritem" /><label for="m6">Mental Health</label></li>
+
+
+
+
+                                            </ul>
+
+                                        </div>
+
+
+
+                                        <div class="obj-filter " id="evening">
+                                            <div class="title">Work in evenings</div>
+                                            <label>
+                                                <input type="radio" id="eveningChoice1" name="eveningChoice" value="dontcare" onclick="eveningChoice(); " checked>
+                                                <a>Not relevant</a>
+                                            </label>
+                                            &nbsp;
+                                            <input type="radio" id="eveningChoice2" name="eveningChoice" value="Yes" onclick="eveningChoice();"> Yes &nbsp;
+                                            <input type="radio" id="eveningChoice3" name="eveningChoice" value="No" onclick="eveningChoice();"> No
+
+
+
+                                        </div>
+
+                                        <div class="obj-filter " id="weekend">
+                                            <div class="title">Work in weekends</div>
+                                            <input type="radio" id="weekendChoice1" name="weekendChoice" value="dontcare" onclick="weekendChoice();" checked>Not relevant &nbsp;
+                                            <input type="radio" id="weekendChoice2" name="weekendChoice" value="Yes" onclick="weekendChoice();"> Yes &nbsp;
+                                            <input type="radio" id="weekendChoice3" name="weekendChoice" value="No" onclick="weekendChoice();"> No
+
+
+
+                                        </div>
+
+
+
+
+                                        <div class="applyButton">
+                                            <button id="apply-button">Apply</button>
+                                        </div>
+
+
+
+
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="right-column">
+                            <!--
+                            <div class="search-bar">
+
+                                State <button onclick="selectState()" class="dropbtn">Dropdown</button>
+                                <div id="myDropdown" class="dropdown-content">
+                                    <a href="#">VIC</a>
+                                    <a href="#">NSW</a>
+                                    <a href="#">ACT</a>
+                                    <a href="#">QLD</a>
+                                    <a href="#">SA</a>
+                                    <a href="#">WA</a>
+                                    <a href="#">NT</a>
+
+                                </div>
+                            </div>
+-->
+
+                            <h2>Results</h2>
+                            <div class="lists">
+
+
+                                <ul aria-label="Front End Developer - we&#x27;re still growing!!" data-job-id="37216665" class="starte5 start1x start1s" data-automation="premiumJob"><img src="1x1_transparent.gif" class="backgroundImage" />
+                                    <div class="listview"></div>
+                                </ul>
+
+                                <div id="page_button_row_bot"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+
+            </div>
+        </div>
+        <form id="parametric_add_form" action="/qapi/partlist/add_parametric/" method="post"><input type='hidden' name='csrfmiddlewaretoken' value='xnsaChPKaEdYXwmcHmO7XbJMPHXU2xNCxWfvLoVuVKNvUFWWsgFA1Hx1tqoWGPi6' /><input id="parametric_add_filter_ids" type="hidden" name="filter_ids" value=""><input id="parametric_add_filter" type="hidden" name="filter_string" value=""><input type="hidden" name="class_slug" value="cpu"></form>
+    </div>
+
+</div>
+
+<div class="drop">
+    <div id="search-tray-container">
+        <div class="page-container">
+            <div class="search-tray search-box">
+                <form action="/search/" method="get">
+                    <input type="hidden" name="cc" value="us" />
+                    <input id="search_q" type="text" name="q" size="32" autocomplete="off" />
+                    <input id="search_go" type="submit" value="Search" />
+                </form>
+                <div id="search_result"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="default_dialog" class="hidden-dialog"></div>
+
+
+
+</html>
