@@ -114,19 +114,19 @@ mental_h <- as.character(logical(length = nrow(ach)))
 for (f in 1:length(ach$SPECIALISED_SERVICES)) {
     serv <- ach$SPECIALISED_SERVICES[f]
     if (grepl(x = serv, pattern = "dementia", ignore.case = TRUE)) {
-        dem[f] = "dementia"
+        dem[f] = "TRUE"
     }
     if (grepl(x = serv, pattern = "reablement", ignore.case = TRUE)){
-        reable[f] = "reable"
+        reable[f] = "TRUE"
     }
     if (grepl(x = serv, pattern = "respite", ignore.case = TRUE)){
-        respite[f] = "respite"
+        respite[f] = "TRUE"
     }  
     if (grepl(x = serv, pattern = "terminal", ignore.case = TRUE)){
-        terminal[f] = "terminal"
+        terminal[f] = "TRUE"
     }  
     if (grepl(x = serv, pattern = "mental", ignore.case = TRUE)){
-        mental_h[f] = "mental_health"
+        mental_h[f] = "TRUE"
     }  
 }
 ach$dementia <- dem
