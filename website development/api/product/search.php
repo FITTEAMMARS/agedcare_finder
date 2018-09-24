@@ -60,7 +60,8 @@ if($num>0){
             "reable" => $reable,
             "respite" => $respite,
             "terminal" => $terminal,
-            "mental_health" => $mental_health
+            "mental_health" => $mental_health,
+            "stars" => $average
         );
  
         array_push($facility_arr["records"], $facility_item);

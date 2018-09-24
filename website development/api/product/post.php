@@ -26,7 +26,7 @@ $rating->stars = $data->stars;
 $rating->email = $data->email;
 
 // create the product
-if($product->create()){
+if($rating->create()){
     echo '{';
         echo '"message": "Product was created."';
     echo '}';

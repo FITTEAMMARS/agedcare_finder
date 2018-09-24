@@ -38,8 +38,8 @@ class Facility{
     function search($pcode,$stime,$ftime,$weekend,$night,$dementia,$reable,$respite,$terminal,$mental_health){
  
     // select all query
-    $query = "SELECT * FROM facility_basic_test WHERE
-                STREET_PCODE LIKE ? AND OPEN_HOUR >= ? AND CLOSE_HOUR <= ? AND WEEKENDS LIKE ? AND EVENINGS LIKE ? AND dementia LIKE ? AND reable LIKE ? AND respite LIKE ? AND terminal LIKE ? AND mental_health LIKE ?";
+    $query = "SELECT *,AVG(stars) AS average FROM facility_basic_test LEFT JOIN home_facility_rating ON facility_basic_test.id = home_facility_rating.facility_id WHERE
+                STREET_PCODE LIKE ? AND OPEN_HOUR >= ? AND CLOSE_HOUR <= ? AND WEEKENDS LIKE ? AND EVENINGS LIKE ? AND dementia LIKE ? AND reable LIKE ? AND respite LIKE ? AND terminal LIKE ? AND mental_health LIKE ? GROUP BY facility_basic_test.id";
  
     // prepare query statement
     $stmt = $this->conn->prepare($query);
