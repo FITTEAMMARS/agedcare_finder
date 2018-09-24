@@ -45,7 +45,7 @@ if($num>0){
         // this will make $row['name'] to
         // just $name only
         extract($row);
- 
+        
         $facility_item=array(
             "id" => $id,
             "outlet_name" => $OUTLET_NAME,
