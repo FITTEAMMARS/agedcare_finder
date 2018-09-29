@@ -135,12 +135,6 @@ ach$mental_health  <- mental_h
 
 attr <- ach[!duplicated(ach$OUTLET_NAME),] 
 attr$address <- paste(attr$STREET_ST_ADDRESS, attr$STREET_SUBURB, attr$STREET_PCODE, attr$STREET_STATE, sep = ", ")
-attr <- attr %>%
-  select(id, OUTLET_NAME, address, STREET_STATE, STREET_PCODE,
-         STREET_SUBURB, OPEN_HOUR, CLOSE_HOUR, WEEKENDS, EVENINGS,
-         dementia, reable, respite, terminal, mental_health,
-         WEBSITE, MAIN_EMAIL, MAIN_PHONE, PUB_HOLIDAYS) 
-
 
 ## OUTLET_NAME cleaning --------------
 
@@ -267,10 +261,30 @@ attr$OUTLET_NAME <- unlist(lapply(X = attr$OUTLET_NAME,
                                   perl = TRUE))
 
 
+attr$MAIN_PHONE <- as.character(attr$MAIN_PHONE)
 
+attr_desc_rel <- attr %>%
+    select(id, OUTLET_NAME, address, STREET_STATE, STREET_PCODE,
+           STREET_SUBURB, OPEN_HOUR, CLOSE_HOUR, WEEKENDS, EVENINGS,
+           dementia, reable, respite, terminal, mental_health,
+           WEBSITE, MAIN_EMAIL, MAIN_PHONE, PUB_HOLIDAYS, DESCRIPTION,
+           RELIGION) 
+
+
+
+
+attr <- attr %>%
+    select(id, OUTLET_NAME, address, STREET_STATE, STREET_PCODE,
+           STREET_SUBURB, OPEN_HOUR, CLOSE_HOUR, WEEKENDS, EVENINGS,
+           dementia, reable, respite, terminal, mental_health,
+           WEBSITE, MAIN_EMAIL, MAIN_PHONE, PUB_HOLIDAYS) 
+
+
+# OUTPUT ------------
 
 write.csv(x = attr, file = "./data/clean/facility_basic.csv", na = "NaN", row.names = FALSE)
 
+write.csv(x = attr_desc_rel, file = "./data/clean/facility_basic_desc_religion.csv", na = "NaN", row.names = FALSE)
 
 
 
@@ -318,5 +332,4 @@ to_24h <- function(time_string){
 }
 
 
-# OUTPUT ------------
 
