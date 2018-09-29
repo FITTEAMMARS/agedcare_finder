@@ -7,8 +7,6 @@ library(tidytext)
 library(reshape2)
 
 
-# aged care residential
-#acr <- read.csv("./data/Aged-Care-Homes-June-2018.csv")
 # aged care home
 ach <- read.csv("./data/HCP-June-2018.csv", fileEncoding="UTF-8-BOM")
 # Removing unecessary variables -----------
@@ -141,8 +139,7 @@ attr <- attr %>%
   select(id, OUTLET_NAME, address, STREET_STATE, STREET_PCODE,
          STREET_SUBURB, OPEN_HOUR, CLOSE_HOUR, WEEKENDS, EVENINGS,
          dementia, reable, respite, terminal, mental_health,
-         DESCRIPTION, WEBSITE, MAIN_EMAIL, MAIN_PHONE, PUB_HOLIDAYS,
-         RELIGION) 
+         WEBSITE, MAIN_EMAIL, MAIN_PHONE, PUB_HOLIDAYS) 
 
 
 ## OUTLET_NAME cleaning --------------
