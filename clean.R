@@ -262,13 +262,79 @@ attr$OUTLET_NAME <- unlist(lapply(X = attr$OUTLET_NAME,
 
 
 attr$MAIN_PHONE <- as.character(attr$MAIN_PHONE)
+attr$STREET_ST_ADDRESS <- as.character(attr$STREET_ST_ADDRESS)
+
+
+# adress from individual observations
+create_address_string <- function(row_number, data_set){
+    row <- data_set[row_number,]
+    row_street <- gsub(pattern = "\\s", replacement = "+", x = tolower(row$STREET_ST_ADDRESS), perl = TRUE)
+    row_state <- as.character(row$STREET_STATE)
+    row_pcode <- as.character(row$STREET_PCODE)
+    row_suburb <- as.character(row$STREET_SUBURB)
+    out <- paste(row_street, row_suburb, row_state, row_pcode, sep = ",+")
+    return(out)
+}
+
+
+
+# AUX Functions -----------
+# get lat/lng from string address 
+
+address_code <- function(address){
+    library(RJSONIO)
+    url <- "https://maps.googleapis.com/maps/api/geocode/json?address="
+    url <- URLencode(paste(url, address, "&key=", api_key, "&sensor=false", sep = ""))
+    test <- fromJSON(url, simplify = FALSE)
+    if (test$status == "OK"){
+        out <- c(test$results[[1]]$geometry$location[[1]],
+                 test$results[[1]]$geometry$location[[2]])
+    }
+    else{
+        out <- NA
+    }
+    Sys.sleep(0.2)
+    return(out)
+    
+}
+
+
+if(sum(lat_v) == 0){
+    lat_v <- numeric(length = nrow(attr))
+    lng_v <- numeric(length = nrow(attr))
+    
+    for(ff in 1:nrow(attr)){
+        gcode <- address_code(create_address_string(ff, attr))
+        lat_v[ff] <- gcode[1]
+        lng_v[ff] <- gcode[2]
+    }
+}
+
+
+attr$lat <- lat_v
+attr$lng <- lng_v
+
+
+## 
+na_ix <- which(is.na(attr$lat) & is.na(attr$lng))
+strlist <- character(length = length(na_ix))
+
+for(ix in na_ix){
+    pos <- 1
+    strlist[pos] <- paste(attr[ix,]$STREET_SUBURB, attr[ix,]$STREET_STATE, attr[ix,]$STREET_PCODE, sep = "+")
+    attr$lat[ix] <- address_code(strlist[pos])[1]
+    attr$lng[ix] <- address_code(strlist[pos])[2]
+    pos <- pos + 1
+}
+
+
 
 attr_desc_rel <- attr %>%
     select(id, OUTLET_NAME, address, STREET_STATE, STREET_PCODE,
            STREET_SUBURB, OPEN_HOUR, CLOSE_HOUR, WEEKENDS, EVENINGS,
            dementia, reable, respite, terminal, mental_health,
            WEBSITE, MAIN_EMAIL, MAIN_PHONE, PUB_HOLIDAYS, DESCRIPTION,
-           RELIGION) 
+           RELIGION, lat, lng) 
 
 
 
@@ -277,7 +343,7 @@ attr <- attr %>%
     select(id, OUTLET_NAME, address, STREET_STATE, STREET_PCODE,
            STREET_SUBURB, OPEN_HOUR, CLOSE_HOUR, WEEKENDS, EVENINGS,
            dementia, reable, respite, terminal, mental_health,
-           WEBSITE, MAIN_EMAIL, MAIN_PHONE, PUB_HOLIDAYS) 
+           WEBSITE, MAIN_EMAIL, MAIN_PHONE, PUB_HOLIDAYS, lat, lng) 
 
 
 # OUTPUT ------------
@@ -286,6 +352,9 @@ write.csv(x = attr, file = "./data/clean/facility_basic.csv", na = "NaN", row.na
 
 write.csv(x = attr_desc_rel, file = "./data/clean/facility_basic_desc_religion.csv", na = "NaN", row.names = FALSE)
 
+# RES ------------
+
+acr <- read.csv(file = "./data/clean/residential_basic.csv")
 
 
 
@@ -300,30 +369,8 @@ cult_df$CULTURE <- as.character(cult_df$CULTURE) %>%
 cult_df$CULTURE <- lapply(X = cult_df$CULTURE, FUN = gsub, pattern = "^\\s|\\s$", replacement = "")
 
 
-# AUX Functions -----------
-# get lat/lng from string address 
-address_code <- function(address){
-  library(RJSONIO)
-  url <- "http://maps.google.com/maps/api/geocode/json?address="
-  url <- URLencode(paste(url, address, "&sensor=false", sep = ""))
-  test <- fromJSON(url, simplify = FALSE)
-  if (test$status == "OK"){
-    out <- c(test$results[[1]]$geometry$location$lng,
-             test$results[[1]]$geometry$location$lat)
-  }
-  else{
-    out <- NA
-  }
-  Sys.sleep(0.2)
-  return(out)
 
-}
-# adress from individual observations
-create_address_string <- function(row_number, data_set){
-  row <- data_set[row_number,]
-  out <- paste(row$BUS_ST_ADDRESS, row$BUS_SUBURB, row$BUS_PCODE, sep = "")
-  return(out)
-}
+
 
 # string AM/PM to 24h time 
 
@@ -332,4 +379,5 @@ to_24h <- function(time_string){
 }
 
 
-
+zz <- fromJSON(URLdecode("https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key=AIzaSyDCo-t-YzgmFHUVz7zgyBG7qRWlXBwW5fk
+"))
