@@ -347,8 +347,9 @@ attr <- attr %>%
 
 
 # OUTPUT ------------
-
+attr$id <- c(1:nrow(attr))
 write.csv(x = attr, file = "./data/clean/facility_basic.csv", na = "NaN", row.names = FALSE)
+attr_desc_rel$id <- c(1:nrow(attr_desc_rel))
 
 write.csv(x = attr_desc_rel, file = "./data/clean/facility_basic_desc_religion.csv", na = "NaN", row.names = FALSE)
 
