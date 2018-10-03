@@ -357,7 +357,33 @@ write.csv(x = attr_desc_rel, file = "./data/clean/facility_basic_desc_religion.c
 
 acr <- read.csv(file = "./data/clean/residential_basic.csv")
 
+acr$ADDRESS
 
+acr$ADDRESS <- unlist(lapply(X = acr$ADDRESS,
+                                  FUN = gsub,
+                                  pattern = "\\s+",
+                                  replacement = " ",
+                                  perl = TRUE))
+
+
+
+acr$lat <- numeric(length = nrow(acr))
+acr$lng <- numeric(length = nrow(acr))
+
+
+
+if(sum(acr$lat) == 0){
+    for(ff in 1:nrow(acr)){
+        gcode <- address_code(acr$ADDRESS[ff])
+        acr$lat[ff] <- gcode[1]
+        acr$lng[ff] <- gcode[2]
+    }
+}
+
+
+acr <- acr[acr$STREET_STATE != "NaN",]
+
+write.csv(x = acr, file = "./data/clean/residential_basic.csv")
 
 # Culture & Language ----------------
 
@@ -373,11 +399,6 @@ cult_df$CULTURE <- lapply(X = cult_df$CULTURE, FUN = gsub, pattern = "^\\s|\\s$"
 
 
 
-# string AM/PM to 24h time 
-
-to_24h <- function(time_string){
-    return("pass")
-}
 
 
 zz <- fromJSON(URLdecode("https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key=AIzaSyDCo-t-YzgmFHUVz7zgyBG7qRWlXBwW5fk
