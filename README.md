@@ -3,7 +3,8 @@
 # agedcare_finder
 A project for FIT5120 @ Monash University
 #### Data
-This project uses publicly available data from the AIHW - accessible from https://www.gen-agedcaredata.gov.au/
+This project uses publicly available data from the AIHW and the Department of Health - accessible from https://www.gen-agedcaredata.gov.au/ and https://agedcare.health.gov.au/.
+
 
 #### Purpose of this repository
 Contains all data related cleaning, modelling and visualisation performed on the four data sets used. 
