@@ -384,7 +384,7 @@ if(sum(acr$lat) == 0){
 acr <- acr[acr$STREET_STATE != "NaN",]
 
 write.csv(x = acr, file = "./data/clean/residential_basic.csv")
-
+  
 # Culture & Language ----------------
 
 cult_df <- ach %>%

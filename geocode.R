@@ -1,3 +1,5 @@
+# takes a string argument, outputs a vector with latitude and longitude of address
+
 address_code <- function(address){
     library(RJSONIO)
     url <- "http://maps.google.com/maps/api/geocode/json?address="

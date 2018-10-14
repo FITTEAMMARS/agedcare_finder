@@ -4,6 +4,9 @@ library(reshape2)
 library(ggplot2)
 library(ggthemes)
 
+#
+# Data manually parsed from Aged Care Workforce Report 2016
+#
 
 # roles
 occ <- c("Nurse Practitioner (NP)",
@@ -113,6 +116,7 @@ ggplot(data = skill_plot, aes(x = variable, y = value)) +
     xlab("Occupation") + 
     ylab("%") +
     ggtitle("Areas of Training in Demand Within Next 12 Months by Role")
+
 
 
 
