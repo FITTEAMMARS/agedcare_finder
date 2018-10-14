@@ -1,6 +1,7 @@
 library(highcharter)
 library(tidyverse)
 
+# creates a JavaScript object
 
 hcch <- function (hc_opts = list(), theme = getOption("highcharter.theme"), 
                   type = "chart", width = NULL, height = NULL, elementId = NULL) 

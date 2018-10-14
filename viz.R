@@ -69,6 +69,8 @@ cult_percentage <- c(57.5,
 
 cult_df <- data.frame(cultures = cult, cult_count = cult_percentage)
 
+# static plots
+# export to csv to make interactive
 ggplot(data = cult_df, aes(cultures, cult_count)) +
     geom_bar(stat="identity", fill="#ffcc00") + ggtitle("") +
     theme_gdocs() + 

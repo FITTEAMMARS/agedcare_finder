@@ -278,7 +278,7 @@ create_address_string <- function(row_number, data_set){
 
 
 
-# AUX Functions -----------
+# GEOCODING  -----------
 # get lat/lng from string address 
 
 address_code <- function(address){
@@ -349,11 +349,12 @@ attr <- attr %>%
 # OUTPUT ------------
 attr$id <- c(1:nrow(attr))
 write.csv(x = attr, file = "./data/clean/facility_basic.csv", na = "NaN", row.names = FALSE)
-attr_desc_rel$id <- c(1:nrow(attr_desc_rel))
-
-write.csv(x = attr_desc_rel, file = "./data/clean/facility_basic_desc_religion.csv", na = "NaN", row.names = FALSE)
+## #deprecated - description and religion not used
+## attr_desc_rel$id <- c(1:nrow(attr_desc_rel))
+## write.csv(x = attr_desc_rel, file = "./data/clean/facility_basic_desc_religion.csv", na = "NaN", row.names = FALSE)
 
 # RES ------------
+# adding geocode to residential also. 
 
 acr <- read.csv(file = "./data/clean/residential_basic.csv")
 
@@ -384,8 +385,11 @@ if(sum(acr$lat) == 0){
 acr <- acr[acr$STREET_STATE != "NaN",]
 
 write.csv(x = acr, file = "./data/clean/residential_basic.csv")
+
+
   
 # Culture & Language ----------------
+# deprecated 
 
 cult_df <- ach %>%
   select(id, CULTURE)
@@ -394,12 +398,3 @@ cult_df$CULTURE <- as.character(cult_df$CULTURE) %>%
   strsplit(",")
 
 cult_df$CULTURE <- lapply(X = cult_df$CULTURE, FUN = gsub, pattern = "^\\s|\\s$", replacement = "")
-
-
-
-
-
-
-
-zz <- fromJSON(URLdecode("https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key=AIzaSyDCo-t-YzgmFHUVz7zgyBG7qRWlXBwW5fk
-"))
